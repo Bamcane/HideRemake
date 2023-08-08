@@ -2323,8 +2323,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam + Server()->TickSpeed() * g_Config.m_SvTeamChangeDelay > Server()->Tick()))
 				return;
 
-			return;
-
 			//Kill Protection
 			CCharacter *pChr = pPlayer->GetCharacter();
 			if(pChr)
@@ -2602,6 +2600,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		}
 		else if(MsgID == NETMSGTYPE_CL_KILL && !m_World.m_Paused)
 		{
+			return;
+
 			if(m_VoteCloseTime && m_VoteCreator == ClientID && GetDDRaceTeam(ClientID) && (IsKickVote() || IsSpecVote()))
 			{
 				SendChatTarget(ClientID, "You are running a vote please try again after the vote is done!");
