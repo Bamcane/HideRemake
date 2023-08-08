@@ -877,6 +877,11 @@ void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPla
 	if(!pPrimaryPlayer || !pTargetPlayer)
 		return;
 
+	GameServer()->SendChatTarget(pPrimaryPlayer->GetCID(), "You couldn't swap in this mode");
+
+	return;
+	/*
+
 	char aBuf[128];
 
 	int Since = (Server()->Tick() - m_aLastSwap[pTargetPlayer->GetCID()]) / Server()->TickSpeed();
@@ -945,6 +950,7 @@ void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPla
 		Server()->ClientName(pPrimaryPlayer->GetCID()), Server()->ClientName(pTargetPlayer->GetCID()));
 
 	GameServer()->SendChatTeam(Team, aBuf);
+	*/
 }
 
 void CGameTeams::ProcessSaveTeam()

@@ -30,6 +30,7 @@
 
 #include "entities/character.h"
 #include "gamemodes/DDRace.h"
+#include "gamemodes/HideR.h"
 #include "player.h"
 #include "score.h"
 
@@ -3462,7 +3463,7 @@ void CGameContext::OnInit()
 		}
 	}
 
-	m_pController = new CGameControllerDDRace(this);
+	m_pController = new CGameControllerHideR(this);
 
 	const char *pCensorFilename = "censorlist.txt";
 	IOHANDLE File = Storage()->OpenFile(pCensorFilename, IOFLAG_READ | IOFLAG_SKIP_BOM, IStorage::TYPE_ALL);
@@ -3909,7 +3910,7 @@ bool CGameContext::IsClientPlayer(int ClientID) const
 
 CUuid CGameContext::GameUuid() const { return m_GameUuid; }
 const char *CGameContext::GameType() const { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
-const char *CGameContext::Version() const { return GAME_VERSION; }
+const char *CGameContext::Version() const { return MOD_VERSION; }
 const char *CGameContext::NetVersion() const { return GAME_NETVERSION; }
 
 IGameServer *CreateGameServer() { return new CGameContext; }

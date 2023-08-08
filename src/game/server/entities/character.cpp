@@ -933,6 +933,7 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 	// this is to rate limit respawning to 3 secs
 	m_pPlayer->m_PreviousDieTick = m_pPlayer->m_DieTick;
 	m_pPlayer->m_DieTick = Server()->Tick();
+	m_pPlayer->SetTeam(TEAM_RED, false);
 
 	m_Alive = false;
 	SetSolo(false);
@@ -945,6 +946,22 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
+	if(m_pPlayer->GetTeam() == TEAM_BLUE && Weapon == WEAPON_HAMMER && GameServer()->m_apPlayers[From] && GameServer()->m_apPlayers[From]->GetTeam() == TEAM_RED)
+	{
+		Die(From, Weapon);
+	}
+
+	auto pChr = GameServer()->GetPlayerChar(From);
+	if(pChr && Weapon == WEAPON_NINJA && pChr->GetPlayer()->GetTeam() == TEAM_BLUE && m_pPlayer->GetTeam() == TEAM_RED)
+	{
+		m_pPlayer->SetTeam(TEAM_RED, false);
+
+		pChr->SetNinjaActivationDir(vec2(0, 0));
+		pChr->SetNinjaActivationTick(-500);
+		pChr->SetNinjaCurrentMoveTime(0);
+
+	}
+
 	if(Dmg)
 	{
 		m_EmoteType = EMOTE_PAIN;
@@ -1103,7 +1120,6 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 	if(SnappingClient == SERVER_DEMO_CLIENT)
 		return true;
 
-	CCharacter *pSnapChar = GameServer()->GetPlayerChar(SnappingClient);
 	CPlayer *pSnapPlayer = GameServer()->m_apPlayers[SnappingClient];
 
 	if(pSnapPlayer->GetTeam() == TEAM_SPECTATORS || pSnapPlayer->IsPaused())
@@ -1113,7 +1129,7 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 		else if(pSnapPlayer->m_SpectatorID == SPEC_FREEVIEW && !CanCollide(SnappingClient) && pSnapPlayer->m_SpecTeam && !SameTeam(SnappingClient))
 			return false;
 	}
-	else if(pSnapChar && !pSnapChar->m_Core.m_Super && !CanCollide(SnappingClient) && (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_OFF || (pSnapPlayer->m_ShowOthers == SHOW_OTHERS_ONLY_TEAM && !SameTeam(SnappingClient))))
+	else if(SnappingClient != m_pPlayer->GetCID() && (m_TileIndex == TILE_SOLO_ENABLE || m_TileFIndex == TILE_SOLO_ENABLE))
 		return false;
 
 	return true;

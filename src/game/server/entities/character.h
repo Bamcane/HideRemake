@@ -181,6 +181,7 @@ public:
 	bool CanCollide(int ClientID);
 	bool SameTeam(int ClientID);
 	bool m_NinjaJetpack;
+	bool m_Hide;
 	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	bool m_FrozenLastTick;

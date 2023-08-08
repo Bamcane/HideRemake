@@ -522,7 +522,7 @@ void IGameController::Tick()
 	if(m_GameOverTick != -1)
 	{
 		// game over.. wait for restart
-		if(Server()->Tick() > m_GameOverTick + Server()->TickSpeed() * 10)
+		if(Server()->Tick() > m_GameOverTick + Server()->TickSpeed() * 3)
 		{
 			StartRound();
 			m_RoundCount++;
@@ -578,7 +578,7 @@ void IGameController::Snap(int SnappingClient)
 		return;
 
 	pGameInfoEx->m_Flags =
-		GAMEINFOFLAG_TIMESCORE |
+		// GAMEINFOFLAG_TIMESCORE |
 		GAMEINFOFLAG_GAMETYPE_RACE |
 		GAMEINFOFLAG_GAMETYPE_DDRACE |
 		GAMEINFOFLAG_GAMETYPE_DDNET |
@@ -586,7 +586,7 @@ void IGameController::Snap(int SnappingClient)
 		GAMEINFOFLAG_RACE_RECORD_MESSAGE |
 		GAMEINFOFLAG_ALLOW_EYE_WHEEL |
 		GAMEINFOFLAG_ALLOW_HOOK_COLL |
-		GAMEINFOFLAG_ALLOW_ZOOM |
+		// GAMEINFOFLAG_ALLOW_ZOOM |
 		GAMEINFOFLAG_BUG_DDRACE_GHOST |
 		GAMEINFOFLAG_BUG_DDRACE_INPUT |
 		GAMEINFOFLAG_PREDICT_DDRACE |

@@ -3,6 +3,8 @@
 #include "pickup.h"
 #include "character.h"
 
+#include <engine/shared/config.h>
+
 #include <game/generated/protocol.h>
 #include <game/mapitems.h>
 #include <game/teamscore.h>
@@ -20,6 +22,8 @@ CPickup::CPickup(CGameWorld *pGameWorld, int Type, int SubType, int Layer, int N
 
 	m_Layer = Layer;
 	m_Number = Number;
+
+	m_PickupTick = 0;
 
 	GameWorld()->InsertEntity(this);
 }
@@ -147,8 +151,14 @@ void CPickup::Tick()
 
 			case POWERUP_NINJA:
 			{
+				if(pChr->GetPlayer()->GetTeam() == TEAM_RED)
+					break;
+
+				if((m_PickupTick + Config()->m_SvNinjaRespawn * Server()->TickSpeed()) > Server()->Tick())
+					break;
 				// activate ninja on target player
 				pChr->GiveNinja();
+				m_PickupTick = Server()->Tick();
 				break;
 			}
 			default:
@@ -165,6 +175,9 @@ void CPickup::TickPaused()
 void CPickup::Snap(int SnappingClient)
 {
 	if(NetworkClipped(SnappingClient))
+		return;
+
+	if(m_Type == POWERUP_NINJA && ((m_PickupTick + Config()->m_SvNinjaRespawn * Server()->TickSpeed()) > Server()->Tick()))
 		return;
 
 	int SnappingClientVersion = GameServer()->GetClientVersion(SnappingClient);
