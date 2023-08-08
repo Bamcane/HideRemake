@@ -219,6 +219,8 @@ void CCharacter::HandleNinja()
 {
 	if(m_Core.m_ActiveWeapon != WEAPON_NINJA)
 		return;
+	
+	SetNinjaCurrentMoveTime(1);
 
 	if((Server()->Tick() - m_Core.m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
 	{
