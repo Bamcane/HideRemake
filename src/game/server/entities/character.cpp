@@ -957,6 +957,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	if(pChr && Weapon == WEAPON_NINJA && pChr->GetPlayer()->GetTeam() == TEAM_BLUE && m_pPlayer->GetTeam() == TEAM_RED)
 	{
 		m_pPlayer->SetTeam(TEAM_BLUE, false);
+		m_pPlayer->Pause(CPlayer::PAUSE_NONE, true);
 
 		pChr->SetNinjaActivationDir(vec2(0, 0));
 		pChr->SetNinjaActivationTick(-500);
