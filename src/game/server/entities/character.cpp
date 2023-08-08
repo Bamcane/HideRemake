@@ -219,8 +219,6 @@ void CCharacter::HandleNinja()
 {
 	if(m_Core.m_ActiveWeapon != WEAPON_NINJA)
 		return;
-	
-	m_Core.m_Ninja.m_ActivationTick = Server()->Tick();
 
 	if((Server()->Tick() - m_Core.m_Ninja.m_ActivationTick) > (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000))
 	{
@@ -228,6 +226,8 @@ void CCharacter::HandleNinja()
 		RemoveNinja();
 		return;
 	}
+	
+	m_Core.m_Ninja.m_ActivationTick = Server()->Tick();
 
 	int NinjaTime = m_Core.m_Ninja.m_ActivationTick + (g_pData->m_Weapons.m_Ninja.m_Duration * Server()->TickSpeed() / 1000) - Server()->Tick();
 
