@@ -58,6 +58,8 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	{
 		float Strength = TuningList()[m_TuneZone].m_ShotgunStrength;
 		const vec2 &HitPos = pHit->Core()->m_Pos;
+		if(pOwnerChar && pOwnerChar->GetPlayer()->GetTeam() == TEAM_BLUE && pHit->GetPlayer()->GetTeam() == TEAM_RED)
+			Strength = -Strength;
 		if(!g_Config.m_SvOldLaser)
 		{
 			if(m_PrevPos != HitPos)
@@ -88,7 +90,10 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	}
 	else if(m_Type == WEAPON_LASER)
 	{
-		pHit->Unfreeze();
+		if(pOwnerChar && pOwnerChar->GetPlayer()->GetTeam() == TEAM_BLUE && pHit->GetPlayer()->GetTeam() == TEAM_RED)
+			pHit->Freeze();
+		else
+			pHit->UnFreeze();
 	}
 	pHit->TakeDamage(vec2(0, 0), 0, m_Owner, m_Type);
 	return true;
