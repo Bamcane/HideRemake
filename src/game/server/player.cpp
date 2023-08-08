@@ -648,8 +648,6 @@ CCharacter *CPlayer::ForceSpawn(vec2 Pos)
 
 void CPlayer::SetTeam(int Team, bool DoChatMsg)
 {
-	KillCharacter();
-
 	m_Team = Team;
 	m_LastSetTeam = Server()->Tick();
 	m_LastActionTick = Server()->Tick();
@@ -664,6 +662,7 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 
 	if(Team == TEAM_SPECTATORS)
 	{
+		KillCharacter();
 		// update spectator modes
 		for(auto &pPlayer : GameServer()->m_apPlayers)
 		{

@@ -50,15 +50,15 @@ void CGameContext::ConCredits(IConsole::IResult *pResult, void *pUserData)
 void CGameContext::ConInfo(IConsole::IResult *pResult, void *pUserData)
 {
 	log_info("chatresp", "DDraceNetwork Mod. Version: " GAME_VERSION);
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
+		"HideR Mod. Version: " MOD_VERSION);
 	if(GIT_SHORTREV_HASH)
 	{
 		char aBuf[64];
 		str_format(aBuf, sizeof(aBuf), "Git revision hash: %s", GIT_SHORTREV_HASH);
 		log_info("chatresp", "%s", aBuf);
 	}
-	log_info("chatresp", "Official site: DDNet.org");
-	log_info("chatresp", "For more info: /cmdlist");
-	log_info("chatresp", "Or visit DDNet.org");
 }
 
 void CGameContext::ConList(IConsole::IResult *pResult, void *pUserData)
@@ -257,6 +257,10 @@ static void ToggleSpecPause(IConsole::IResult *pResult, void *pUserData, int Pau
 	if(!pPlayer)
 		return;
 
+	pSelf->SendChatTarget(pResult->m_ClientID, "You couldn't spec in this mode");
+	return;
+
+	/*
 	int PauseState = pPlayer->IsPaused();
 	if(PauseState > 0)
 	{
@@ -284,6 +288,7 @@ static void ToggleSpecPause(IConsole::IResult *pResult, void *pUserData, int Pau
 	{
 		pPlayer->Pause(PauseType, false);
 	}
+	*/
 }
 
 static void ToggleSpecPauseVoted(IConsole::IResult *pResult, void *pUserData, int PauseType)
@@ -295,6 +300,8 @@ static void ToggleSpecPauseVoted(IConsole::IResult *pResult, void *pUserData, in
 	CPlayer *pPlayer = pSelf->m_apPlayers[pResult->m_ClientId];
 	if(!pPlayer)
 		return;
+
+	/*
 
 	int PauseState = pPlayer->IsPaused();
 	if(PauseState > 0)
@@ -320,6 +327,7 @@ static void ToggleSpecPauseVoted(IConsole::IResult *pResult, void *pUserData, in
 		if(IsPlayerBeingVoted)
 			pPlayer->SetSpectatorId(pSelf->m_VoteVictim);
 	}
+	*/
 }
 
 void CGameContext::ConToggleSpec(IConsole::IResult *pResult, void *pUserData)

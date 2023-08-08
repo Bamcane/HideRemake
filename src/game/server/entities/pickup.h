@@ -24,6 +24,7 @@ private:
 	int m_Type;
 	int m_Subtype;
 	int m_Flags;
+	int64_t m_PickupTick;
 
 	// DDRace
 

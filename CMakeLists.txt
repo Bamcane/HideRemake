@@ -104,7 +104,7 @@ option(VIDEORECORDER "Enable video recording support via FFmpeg" ON)
 option(UPNP "Enable UPnP support" OFF)
 option(ANTIBOT "Enable support for a dynamic anticheat library (not provided, see src/antibot for interface if you want to implement your own)" OFF)
 option(HEADLESS_CLIENT "Build the client without graphics" OFF)
-option(CLIENT "Compile client" ON)
+option(CLIENT "Compile client" OFF)
 option(SERVER "Compile server" ON)
 option(TOOLS "Compile tools" ON)
 option(DOWNLOAD_GTEST "Download and compile GTest" ${AUTO_DEPENDENCIES_DEFAULT})
@@ -2847,6 +2847,8 @@ if(SERVER)
     gamemodes/ddnet.h
     gamemodes/mod.cpp
     gamemodes/mod.h
+    gamemodes/HideR.cpp
+    gamemodes/HideR.h
     gameworld.cpp
     gameworld.h
     mutes.cpp

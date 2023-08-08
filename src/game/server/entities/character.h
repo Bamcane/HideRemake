@@ -206,6 +206,7 @@ public:
 	bool SameTeam(int ClientId);
 	void StopRecording();
 	bool m_NinjaJetpack;
+	bool m_Hide;
 	int m_TeamBeforeSuper;
 	int m_FreezeTime;
 	bool m_FrozenLastTick;

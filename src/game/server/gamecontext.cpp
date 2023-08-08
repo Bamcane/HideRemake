@@ -5,6 +5,7 @@
 #include "entities/character.h"
 #include "gamemodes/ddnet.h"
 #include "gamemodes/mod.h"
+#include "gamemodes/HideR.h"
 #include "player.h"
 #include "score.h"
 #include "teeinfo.h"
@@ -4224,10 +4225,7 @@ void CGameContext::OnInit(const void *pPersistentData)
 		}
 	}
 
-	if(!str_comp(Config()->m_SvGametype, "mod"))
-		m_pController = new CGameControllerMod(this);
-	else
-		m_pController = new CGameControllerDDNet(this);
+	m_pController = new CGameControllerHideR(this);
 
 	ReadCensorList();
 
