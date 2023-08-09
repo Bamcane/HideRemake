@@ -47,7 +47,7 @@ MACRO_TUNING_PARAM(PlayerHooking, player_hooking, 1, "Enable player vs player ho
 
 //ddnet tuning
 MACRO_TUNING_PARAM(JetpackStrength, jetpack_strength, 400.0f, "Jetpack pistol strength")
-MACRO_TUNING_PARAM(ShotgunStrength, shotgun_strength, 10.0f, "Shotgun pull strength")
+MACRO_TUNING_PARAM(ShotgunStrength, shotgun_strength, 30.0f, "Shotgun pull strength")
 MACRO_TUNING_PARAM(ExplosionStrength, explosion_strength, 6.0f, "Explosion strength (grenade for example)")
 MACRO_TUNING_PARAM(HammerStrength, hammer_strength, 1.0f, "Hammer strength")
 MACRO_TUNING_PARAM(HookDuration, hook_duration, 1.25f, "Hook duration")
