@@ -110,7 +110,7 @@ void CGameControllerHideR::Tick()
 			m_RoundStartTick ++;
 		}
 
-		if((Server()->Tick() - m_RoundStartTick) == (10 * Server()->TickSpeed()))
+		if((Server()->Tick() - m_RoundStartTick) == (15 * Server()->TickSpeed()))
 		{
 			for(auto &Player : GameServer()->m_apPlayers)
 			{
@@ -122,7 +122,7 @@ void CGameControllerHideR::Tick()
 			}
 			GameServer()->SendChatTarget(-1, "The seekers are released!");
 			GameServer()->SendBroadcast("The seekers are released!", -1);
-		}else if ((Server()->Tick() - m_RoundStartTick) < (10 * Server()->TickSpeed()))
+		}else if ((Server()->Tick() - m_RoundStartTick) < (15 * Server()->TickSpeed()))
 		{
 			for(auto &Player : GameServer()->m_apPlayers)
 			{
@@ -146,7 +146,7 @@ void CGameControllerHideR::Tick()
 					NoHider = false;
 			}
 
-			if((NoSeeker || NoHider) && (Server()->Tick() - m_RoundStartTick) > (10 * Server()->TickSpeed()))
+			if((NoSeeker || NoHider) && (Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
 			{
 				EndRound();
 
@@ -157,6 +157,12 @@ void CGameControllerHideR::Tick()
 				{
 					GameServer()->SendChatTarget(-1, "The seeker win!");
 				}
+			}
+			else if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeLimit * 60 * Server()->TickSpeed()))
+			{
+				EndRound();
+				
+				GameServer()->SendChatTarget(-1, "The hider win!");
 			}
 		}
 	}
