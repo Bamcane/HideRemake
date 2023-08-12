@@ -1608,13 +1608,14 @@ void CGameContext::ConPoints(IConsole::IResult *pResult, void *pUserData)
 
 	if(pResult->NumArguments() > 0)
 	{
-		if(!g_Config.m_SvHideScore)
+		// if(!g_Config.m_SvHideScore)
 			pSelf->Score()->ShowPoints(pResult->m_ClientID, pResult->GetString(0));
-		else
+		/*else
 			pSelf->Console()->Print(
 				IConsole::OUTPUT_LEVEL_STANDARD,
 				"chatresp",
 				"Showing the global points of other players is not allowed on this server.");
+		*/
 	}
 	else
 		pSelf->Score()->ShowPoints(pResult->m_ClientID,
@@ -1627,12 +1628,14 @@ void CGameContext::ConTopPoints(IConsole::IResult *pResult, void *pUserData)
 	if(!CheckClientID(pResult->m_ClientID))
 		return;
 
+	/*
 	if(g_Config.m_SvHideScore)
 	{
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "chatresp",
 			"Showing the global top points is not allowed on this server.");
 		return;
 	}
+	*/
 
 	if(pResult->NumArguments() > 0)
 		pSelf->Score()->ShowTopPoints(pResult->m_ClientID, pResult->GetInteger(0));

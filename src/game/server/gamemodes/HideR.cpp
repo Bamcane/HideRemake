@@ -67,6 +67,14 @@ void CGameControllerHideR::OnPlayerDisconnect(CPlayer *pPlayer, const char *pRea
 	int ClientID = pPlayer->GetCID();
 	bool WasModerator = pPlayer->m_Moderating && Server()->ClientIngame(ClientID);
 
+	for(auto &Player : m_StartSeekers)
+	{
+		if(Player == pPlayer)
+		{
+			m_StartSeekers.erase(std::find(m_StartSeekers.begin(), m_StartSeekers.end(), Player));
+		}
+	}
+
 	IGameController::OnPlayerDisconnect(pPlayer, pReason);
 
 	if(!GameServer()->PlayerModerating() && WasModerator)
@@ -152,14 +160,36 @@ void CGameControllerHideR::Tick()
 
 				if(NoSeeker)
 				{
+					for(auto &Player : GameServer()->m_apPlayers)
+					{
+						if(!Player)
+							continue;
+						if(Player->GetTeam() == TEAM_BLUE)
+							GameServer()->Score()->SavePoint(Player->GetCID(), 3);
+					}
+
 					GameServer()->SendChatTarget(-1, "The hider win!");
 				}else
 				{
+					for(auto &Player : m_StartSeekers)
+					{
+						if(!Player)
+							continue;
+						GameServer()->Score()->SavePoint(Player->GetCID(), 2);
+					}
+
 					GameServer()->SendChatTarget(-1, "The seeker win!");
 				}
 			}
 			else if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeLimit * 60 * Server()->TickSpeed()))
 			{
+				for(auto &Player : GameServer()->m_apPlayers)
+				{
+					if(!Player)
+						continue;
+					if(Player->GetTeam() == TEAM_BLUE)
+						GameServer()->Score()->SavePoint(Player->GetCID(), 2);
+				}
 				EndRound();
 				
 				GameServer()->SendChatTarget(-1, "The hider win!");
@@ -204,6 +234,7 @@ void CGameControllerHideR::StartRound()
 	{
 		CPlayer *pRandomPlayer = vpPlayers[round_to_int(random_float(vpPlayers.size()-1))];
 		pRandomPlayer->SetTeam(TEAM_RED, false);
+		m_StartSeekers.push_back(pRandomPlayer);
 	}
 }
 

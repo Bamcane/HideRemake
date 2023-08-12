@@ -146,6 +146,19 @@ struct CSqlScoreData : ISqlData
 	char m_aRequestingPlayer[MAX_NAME_LENGTH];
 };
 
+struct CSqlPointData : ISqlData
+{
+	CSqlPointData(std::shared_ptr<CScorePlayerResult> pResult) :
+		ISqlData(std::move(pResult))
+	{
+	}
+
+	virtual ~CSqlPointData(){};
+
+	int m_ClientID;
+	int m_PointNum;
+};
+
 struct CScoreSaveResult : ISqlResult
 {
 	CScoreSaveResult(int PlayerID) :
@@ -295,6 +308,8 @@ struct CScoreWorker
 
 	static bool SaveScore(IDbConnection *pSqlServer, const ISqlData *pGameData, Write w, char *pError, int ErrorSize);
 	static bool SaveTeamScore(IDbConnection *pSqlServer, const ISqlData *pGameData, Write w, char *pError, int ErrorSize);
+
+	static bool SavePoint(IDbConnection *pSqlServer, const ISqlData *pGameData, Write w, char *pError, int ErrorSize);
 };
 
 #endif // GAME_SERVER_SCOREWORKER_H

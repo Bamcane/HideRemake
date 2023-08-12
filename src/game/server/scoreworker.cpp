@@ -718,6 +718,25 @@ bool CScoreWorker::SaveTeamScore(IDbConnection *pSqlServer, const ISqlData *pGam
 	return false;
 }
 
+bool CScoreWorker::SavePoint(IDbConnection *pSqlServer, const ISqlData *pGameData, Write w, char *pError, int ErrorSize)
+{
+	const auto *pData = dynamic_cast<const CSqlScoreData *>(pGameData);
+	auto *pResult = dynamic_cast<CScorePlayerResult *>(pGameData->m_pResult.get());
+	auto *paMessages = pResult->m_Data.m_aaMessages;
+
+	int Points = pSqlServer->GetInt(1);
+	if(pSqlServer->AddPoints(pData->m_aName, Points, pError, ErrorSize))
+	{
+		return true;
+	}
+	str_format(paMessages[0], sizeof(paMessages[0]),
+		"You earned %d point%s for finishing this round!",
+		Points, Points == 1 ? "" : "s");
+
+	int NumInserted;
+	return pSqlServer->ExecuteUpdate(&NumInserted, pError, ErrorSize);
+}
+
 bool CScoreWorker::ShowRank(IDbConnection *pSqlServer, const ISqlData *pGameData, char *pError, int ErrorSize)
 {
 	const auto *pData = dynamic_cast<const CSqlPlayerRequest *>(pGameData);
