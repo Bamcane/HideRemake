@@ -67,11 +67,11 @@ void CGameControllerHideR::OnPlayerDisconnect(CPlayer *pPlayer, const char *pRea
 	int ClientID = pPlayer->GetCID();
 	bool WasModerator = pPlayer->m_Moderating && Server()->ClientIngame(ClientID);
 
-	for(auto &Player : m_StartSeekers)
+	for(unsigned i = 0; i < m_StartSeekers.size() ; i ++)
 	{
-		if(Player == pPlayer)
+		if(m_StartSeekers[i] == pPlayer)
 		{
-			m_StartSeekers.erase(std::find(m_StartSeekers.begin(), m_StartSeekers.end(), Player));
+			m_StartSeekers.erase(m_StartSeekers.begin() + i);
 		}
 	}
 
