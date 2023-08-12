@@ -176,6 +176,7 @@ void CScore::SavePoint(int ClientID, int Num)
 	auto Tmp = std::make_unique<CSqlPointData>(pCurPlayer->m_ScoreFinishResult);
 	Tmp->m_ClientID = ClientID;
 	Tmp->m_PointNum = Num;
+	str_copy(Tmp->m_aName, Server()->ClientName(ClientID), sizeof(Tmp->m_aName));
 
 	m_pPool->ExecuteWrite(CScoreWorker::SavePoint, std::move(Tmp), "save point");
 }

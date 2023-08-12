@@ -720,11 +720,11 @@ bool CScoreWorker::SaveTeamScore(IDbConnection *pSqlServer, const ISqlData *pGam
 
 bool CScoreWorker::SavePoint(IDbConnection *pSqlServer, const ISqlData *pGameData, Write w, char *pError, int ErrorSize)
 {
-	const auto *pData = dynamic_cast<const CSqlScoreData *>(pGameData);
+	const auto *pData = dynamic_cast<const CSqlPointData *>(pGameData);
 	auto *pResult = dynamic_cast<CScorePlayerResult *>(pGameData->m_pResult.get());
 	auto *paMessages = pResult->m_Data.m_aaMessages;
 
-	int Points = pSqlServer->GetInt(1);
+	int Points = pData->m_PointNum;
 	if(pSqlServer->AddPoints(pData->m_aName, Points, pError, ErrorSize))
 	{
 		return true;

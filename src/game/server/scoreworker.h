@@ -155,6 +155,8 @@ struct CSqlPointData : ISqlData
 
 	virtual ~CSqlPointData(){};
 
+	char m_aName[MAX_MAP_LENGTH];
+	
 	int m_ClientID;
 	int m_PointNum;
 };
