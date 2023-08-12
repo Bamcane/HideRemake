@@ -41,6 +41,8 @@ public:
 
 	int m_LastPlayerNum;
 
+	std::vector<CPlayer *> m_StartSeekers;
+
 	std::map<int, std::vector<vec2>> m_TeleOuts;
 	std::map<int, std::vector<vec2>> m_TeleCheckOuts;
 

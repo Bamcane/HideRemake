@@ -50,6 +50,7 @@ public:
 	void LoadPlayerData(int ClientId, const char *pName = "");
 	void LoadPlayerTimeCp(int ClientId, const char *pName = "");
 	void SaveScore(int ClientId, int TimeTicks, const char *pTimestamp, const float aTimeCp[NUM_CHECKPOINTS], bool NotEligible);
+	void SavePoint(int ClientID, int Num);
 
 	void SaveTeamScore(int Team, int *pClientIds, unsigned int Size, int TimeTicks, const char *pTimestamp);
 

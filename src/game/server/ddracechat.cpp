@@ -2414,11 +2414,13 @@ void CGameContext::ConTopPoints(IConsole::IResult *pResult, void *pUserData)
 	if(!CheckClientId(pResult->m_ClientId))
 		return;
 
+	/*
 	if(g_Config.m_SvHideScore)
 	{
 		log_info("chatresp", "Showing the global top points is not allowed on this server.");
 		return;
 	}
+	*/
 
 	if(pResult->NumArguments() > 0)
 		pSelf->Score()->ShowTopPoints(pResult->m_ClientId, pResult->GetInteger(0));
