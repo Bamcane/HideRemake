@@ -144,6 +144,8 @@ public:
 	virtual bool CanJoinTeam(int Team, int NotThisID);
 	int ClampTeam(int Team);
 
+	int RoundStartTick() const { return m_RoundStartTick; }
+
 	virtual CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
 
 	// DDRace

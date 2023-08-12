@@ -2320,7 +2320,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 		{
 			CNetMsg_Cl_SetTeam *pMsg = (CNetMsg_Cl_SetTeam *)pRawMsg;
 
-			if(pPlayer->GetTeam() == pMsg->m_Team || (g_Config.m_SvSpamprotection && pPlayer->m_LastSetTeam && pPlayer->m_LastSetTeam + Server()->TickSpeed() * g_Config.m_SvTeamChangeDelay > Server()->Tick()))
+			if(pPlayer->GetTeam() == pMsg->m_Team || pPlayer->GetTeam() == TEAM_BLUE || (pPlayer->GetTeam() == TEAM_SPECTATORS && (Server()->Tick() - m_pController->RoundStartTick()) >= 15 * Server()->TickSpeed()))
 				return;
 
 			//Kill Protection
