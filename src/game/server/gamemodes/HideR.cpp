@@ -38,7 +38,7 @@ void CGameControllerHideR::OnCharacterSpawn(CCharacter *pChr)
 	pChr->SetTeleports(&m_TeleOuts, &m_TeleCheckOuts);
 	m_Teams.OnCharacterSpawn(pChr->GetPlayer()->GetCID());
 
-	if((Server()->Tick() - m_RoundStartTick) > (10 * Server()->TickSpeed()))
+	if((Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
 		pChr->GetPlayer()->SetTeam(TEAM_RED, false);
 }
 

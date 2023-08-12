@@ -214,7 +214,9 @@ public:
 	virtual int GetAutoTeam(int NotThisId);
 	virtual bool CanJoinTeam(int Team, int NotThisId, char *pErrorReason, int ErrorReasonSize);
 
-	CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
+	int RoundStartTick() const { return m_RoundStartTick; }
+
+	virtual CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
 
 	bool IsTeamPlay() const { return m_GameFlags & GAMEFLAG_TEAMS; }
 	// DDRace
