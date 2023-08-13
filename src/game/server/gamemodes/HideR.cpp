@@ -21,6 +21,9 @@ CGameControllerHideR::CGameControllerHideR(class CGameContext *pGameServer) :
 	m_GameFlags = GAMEFLAG_TEAMS;
 	m_LastPlayerNum = 0;
 
+	m_TeleCheckOuts.clear();
+	m_TeleOuts.clear();
+
 	InitTeleporter();
 }
 
