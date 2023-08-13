@@ -229,6 +229,8 @@ void CGameControllerHideR::StartRound()
 		vpPlayers.push_back(Player);
 	}
 
+	m_StartSeekers.clear();
+
 	int Num = maximum(1, PlayerNum / 8);
 	for(int i = 0; i < Num; i ++)
 	{
