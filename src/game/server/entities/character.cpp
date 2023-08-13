@@ -935,7 +935,9 @@ void CCharacter::Die(int Killer, int Weapon, bool SendKillMsg)
 	// this is to rate limit respawning to 3 secs
 	m_pPlayer->m_PreviousDieTick = m_pPlayer->m_DieTick;
 	m_pPlayer->m_DieTick = Server()->Tick();
-	m_pPlayer->SetTeam(TEAM_RED, false);
+
+	if((GameServer()->m_apPlayers[Killer] && GameServer()->m_apPlayers[Killer]->GetTeam() == TEAM_RED) || Weapon == 	WEAPON_WORLD)
+		m_pPlayer->SetTeam(TEAM_RED, false);
 
 	m_Alive = false;
 	SetSolo(false);
