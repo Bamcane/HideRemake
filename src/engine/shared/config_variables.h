@@ -298,6 +298,7 @@ MACRO_CONFIG_INT(SvRescue, sv_rescue, 0, 0, 1, CFGFLAG_SERVER, "Allow /rescue co
 MACRO_CONFIG_INT(SvRescueDelay, sv_rescue_delay, 1, 0, 1000, CFGFLAG_SERVER, "Number of seconds between two rescues")
 MACRO_CONFIG_INT(SvPractice, sv_practice, 0, 0, 1, CFGFLAG_SERVER, "Enable practice mode for teams. Means you can use /rescue, but in turn your rank doesn't count.")
 MACRO_CONFIG_INT(SvPracticeByDefault, sv_practice_by_default, 0, 0, 1, CFGFLAG_SERVER, "Enable use of practice commands by default. Requires sv_test_cmds 1.")
+
 MACRO_CONFIG_INT(SvNinjaRespawn, sv_ninja_respawn, 30, 0, 120, CFGFLAG_SERVER, "Ninja pickup be respawn time in seconds.")
 MACRO_CONFIG_INT(SvTimeLimit, sv_timelimit, 5, 0, 30, CFGFLAG_SERVER, "timelimit in mins.")
 
