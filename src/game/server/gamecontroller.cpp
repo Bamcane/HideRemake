@@ -476,8 +476,10 @@ const char *IGameController::GetTeamName(int Team)
 	{
 	case TEAM_SPECTATORS:
 		return "spectators";
-	case TEAM_GAME:
-		return "game";
+	case TEAM_RED:
+		return "red team";
+	case TEAM_BLUE:
+		return "blue team";
 	default:
 		dbg_assert_failed("Invalid Team: %d", Team);
 	}
