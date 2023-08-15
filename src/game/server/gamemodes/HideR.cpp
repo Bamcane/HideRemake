@@ -18,7 +18,6 @@ CGameControllerHideR::CGameControllerHideR(class CGameContext *pGameServer) :
 	IGameController(pGameServer), m_Teams(pGameServer)
 {
 	m_pGameType = g_Config.m_SvTestingCommands ? TEST_TYPE_NAME : GAME_TYPE_NAME;
-	m_GameFlags = GAMEFLAG_TEAMS;
 	m_LastPlayerNum = 0;
 
 	m_TeleCheckOuts.clear();
@@ -168,7 +167,7 @@ void CGameControllerHideR::Tick()
 						if(!Player)
 							continue;
 						if(Player->GetTeam() == TEAM_BLUE)
-							GameServer()->Score()->SavePoint(Player->GetCID(), 3);
+							GameServer()->Score()->SavePoint(Player->GetCID(), m_StartSeekers.size());
 					}
 
 					GameServer()->SendChatTarget(-1, "The hider win!");
@@ -178,7 +177,7 @@ void CGameControllerHideR::Tick()
 					{
 						if(!Player)
 							continue;
-						GameServer()->Score()->SavePoint(Player->GetCID(), 2);
+						GameServer()->Score()->SavePoint(Player->GetCID(), 3);
 					}
 
 					GameServer()->SendChatTarget(-1, "The seeker win!");
@@ -186,13 +185,19 @@ void CGameControllerHideR::Tick()
 			}
 			else if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeLimit * 60 * Server()->TickSpeed()))
 			{
+				std::vector<CPlayer *> LastBlues;
 				for(auto &Player : GameServer()->m_apPlayers)
 				{
 					if(!Player)
 						continue;
 					if(Player->GetTeam() == TEAM_BLUE)
-						GameServer()->Score()->SavePoint(Player->GetCID(), 2);
+						LastBlues.push_back(Player);
 				}
+				for(auto &Player : LastBlues)
+				{
+					GameServer()->Score()->SavePoint(Player->GetCID(), maximum(1, 6 - (int) LastBlues.size()));
+				}
+				
 				EndRound();
 				
 				GameServer()->SendChatTarget(-1, "The hider win!");

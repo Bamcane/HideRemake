@@ -1942,6 +1942,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				return;
 			}
 			int Team = pMsg->m_Team;
+			if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+				Team = 1;
 
 			// trim right and set maximum length to 256 utf8-characters
 			int Length = 0;
@@ -1973,7 +1975,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			if(Length == 0 || (pMsg->m_pMessage[0] != '/' && (g_Config.m_SvSpamprotection && pPlayer->m_LastChat && pPlayer->m_LastChat + Server()->TickSpeed() * ((31 + Length) / 32) > Server()->Tick())))
 				return;
 
-			int GameTeam = ((CGameControllerDDRace *)m_pController)->m_Teams.m_Core.Team(pPlayer->GetCID());
+			int GameTeam = ((CGameControllerHideR *)m_pController)->m_Teams.m_Core.Team(pPlayer->GetCID());
 			if(Team)
 				Team = ((pPlayer->GetTeam() == TEAM_SPECTATORS) ? CHAT_SPEC : GameTeam);
 			else
@@ -2441,6 +2443,8 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			// set infos
 			if(Server()->WouldClientNameChange(ClientID, pMsg->m_pName) && !ProcessSpamProtection(ClientID))
 			{
+				if(pPlayer->GetTeam() == TEAM_SPECTATORS)
+					return;
 				char aOldName[MAX_NAME_LENGTH];
 				str_copy(aOldName, Server()->ClientName(ClientID), sizeof(aOldName));
 
@@ -4135,6 +4139,9 @@ void CGameContext::WhisperID(int ClientID, int VictimID, const char *pMessage)
 		return;
 
 	if(!CheckClientID2(VictimID))
+		return;
+
+	if(m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS && m_apPlayers[VictimID]->GetTeam() != TEAM_SPECTATORS)
 		return;
 
 	if(m_apPlayers[ClientID])
