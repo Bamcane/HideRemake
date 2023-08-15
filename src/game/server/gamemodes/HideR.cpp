@@ -22,6 +22,7 @@ CGameControllerHideR::CGameControllerHideR(class CGameContext *pGameServer) :
 
 	m_TeleCheckOuts.clear();
 	m_TeleOuts.clear();
+	m_StartSeekers.clear();
 
 	InitTeleporter();
 }
