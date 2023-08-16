@@ -244,7 +244,9 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		return;
 
 	pGameInfoObj->m_GameFlags = m_GameFlags;
-	if(GameServer()->m_apPlayers[SnappingClient] && GameServer()->m_apPlayers[SnappingClient]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD)
+	if(GameServer()->m_apPlayers[SnappingClient] && 
+		(GameServer()->m_apPlayers[SnappingClient]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD ||
+		GameServer()->m_apPlayers[SnappingClient]->m_LastPlayerFlags&PLAYERFLAG_SCOREBOARD))
 		pGameInfoObj->m_GameFlags = 0;
 
 	pGameInfoObj->m_GameStateFlags = 0;
