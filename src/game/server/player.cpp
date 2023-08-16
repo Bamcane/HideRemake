@@ -50,6 +50,8 @@ void CPlayer::Reset()
 	m_TeamChangeTick = Server()->Tick();
 	m_LastInvited = 0;
 	m_WeakHookSpawn = false;
+	m_KillNum = 0;
+	m_CureNum = 0;
 
 	int *pIdMap = Server()->GetIdMap(m_ClientID);
 	for(int i = 1; i < VANILLA_MAX_CLIENTS; i++)

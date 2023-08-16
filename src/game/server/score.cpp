@@ -169,6 +169,9 @@ void CScore::SavePoint(int ClientID, int Num)
 	if(pCon->m_Cheated)
 		return;
 
+	if(Num <= 0)
+		return;
+
 	CPlayer *pCurPlayer = GameServer()->m_apPlayers[ClientID];
 	if(pCurPlayer->m_ScoreFinishResult != nullptr)
 		dbg_msg("sql", "WARNING: previous save score result didn't complete, overwriting it now");

@@ -168,17 +168,17 @@ void CGameControllerHideR::Tick()
 						if(!Player)
 							continue;
 						if(Player->GetTeam() == TEAM_BLUE)
-							GameServer()->Score()->SavePoint(Player->GetCID(), m_StartSeekers.size());
+							GameServer()->Score()->SavePoint(Player->GetCID(), Player->m_CureNum);
 					}
 
 					GameServer()->SendChatTarget(-1, "The hider win!");
 				}else
 				{
-					for(auto &Player : m_StartSeekers)
+					for(auto &Player : GameServer()->m_apPlayers)
 					{
 						if(!Player)
 							continue;
-						GameServer()->Score()->SavePoint(Player->GetCID(), 3);
+						GameServer()->Score()->SavePoint(Player->GetCID(), Player->m_KillNum);
 					}
 
 					GameServer()->SendChatTarget(-1, "The seeker win!");
@@ -231,8 +231,14 @@ void CGameControllerHideR::StartRound()
 	{
 		if(!Player)
 			continue;
-		Player->SetTeam(TEAM_BLUE, false);
+
 		Player->Pause(CPlayer::PAUSE_NONE, true);
+		Player->m_KillNum = 0;
+		Player->m_CureNum = 0;
+
+		if(Player->GetTeam() == TEAM_SPECTATORS)
+			continue;
+		Player->SetTeam(TEAM_BLUE, false);
 		PlayerNum ++;
 
 		vpPlayers.push_back(Player);
@@ -240,7 +246,7 @@ void CGameControllerHideR::StartRound()
 
 	m_StartSeekers.clear();
 
-	int Num = maximum(1, PlayerNum / 8);
+	int Num = maximum(1, (PlayerNum < 8) ? (PlayerNum / 4) : ((PlayerNum / 8) + 1));
 	for(int i = 0; i < Num; i ++)
 	{
 		CPlayer *pRandomPlayer = vpPlayers[round_to_int(random_float(vpPlayers.size()-1))];

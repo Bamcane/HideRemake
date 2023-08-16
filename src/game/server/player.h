@@ -124,6 +124,8 @@ public:
 		int m_Max;
 	} m_Latency;
 
+	int m_KillNum;
+	int m_CureNum;
 private:
 	const uint32_t m_UniqueClientID;
 	CCharacter *m_pCharacter;
