@@ -25,6 +25,7 @@ public:
 	void OnReset() override;
 
 	void Tick() override;
+	void Snap(int SnappingClient) override;
 
 	void StartRound() override;
 
@@ -44,5 +45,10 @@ public:
 	std::map<int, std::vector<vec2>> m_TeleCheckOuts;
 
 	std::vector<CPlayer *> m_StartSeekers;
+
+	int m_SeekerNum;
+	int m_HiderNum;
+	CPlayer *m_BestSeeker;
+	CPlayer *m_LastHider;
 };
 #endif // GAME_SERVER_GAMEMODES_HIDER_H
