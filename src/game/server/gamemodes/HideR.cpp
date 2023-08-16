@@ -41,8 +41,6 @@ void CGameControllerHideR::OnCharacterSpawn(CCharacter *pChr)
 	pChr->SetTeleports(&m_TeleOuts, &m_TeleCheckOuts);
 	m_Teams.OnCharacterSpawn(pChr->GetPlayer()->GetCID());
 
-	if((Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
-		pChr->GetPlayer()->SetTeam(TEAM_RED, false);
 }
 
 void CGameControllerHideR::HandleCharacterTiles(CCharacter *pChr, int MapIndex)
@@ -53,7 +51,10 @@ void CGameControllerHideR::OnPlayerConnect(CPlayer *pPlayer)
 {
 	IGameController::OnPlayerConnect(pPlayer);
 	int ClientID = pPlayer->GetCID();
-	pPlayer->SetTeam(TEAM_BLUE, false);
+	if((Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
+		pPlayer->SetTeam(TEAM_RED, false);
+	else
+		pPlayer->SetTeam(TEAM_BLUE, false);
 
 	if(!Server()->ClientPrevIngame(ClientID))
 	{
