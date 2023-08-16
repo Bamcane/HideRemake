@@ -286,8 +286,8 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		CNetObj_GameData *pGameData = Server()->SnapNewItem<CNetObj_GameData>(0);
 		pGameData->m_TeamscoreBlue = m_HiderNum;
 		pGameData->m_TeamscoreRed = m_SeekerNum;
-		pGameData->m_FlagCarrierRed = -1;
-		pGameData->m_FlagCarrierBlue = -1;
+		pGameData->m_FlagCarrierRed = FLAG_ATSTAND;
+		pGameData->m_FlagCarrierBlue = FLAG_ATSTAND;
 
 		if(m_BestSeeker)
 			pGameData->m_FlagCarrierRed = m_BestSeeker->GetCID();
