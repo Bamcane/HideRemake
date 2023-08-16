@@ -1038,6 +1038,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 {
 	if(m_pPlayer->GetTeam() == TEAM_BLUE && Weapon == WEAPON_HAMMER && GameServer()->m_apPlayers[From] && GameServer()->m_apPlayers[From]->GetTeam() == TEAM_RED)
 	{
+		GameServer()->m_apPlayers[From]->m_KillNum ++;
 		Die(From, Weapon);
 	}
 
@@ -1046,6 +1047,8 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	{
 		m_pPlayer->SetTeam(TEAM_BLUE, false);
 		m_pPlayer->Pause(CPlayer::PAUSE_NONE, true);
+
+		pChr->GetPlayer()->m_CureNum ++;
 
 		pChr->SetNinjaActivationDir(vec2(0, 0));
 		pChr->SetNinjaActivationTick(-500);
