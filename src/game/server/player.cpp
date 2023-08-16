@@ -343,9 +343,13 @@ void CPlayer::Snap(int SnappingClient)
 
 		pPlayerInfo->m_Latency = Latency;
 		pPlayerInfo->m_Score = Score;
-		pPlayerInfo->m_Local = (int)(m_ClientId == SnappingClient && (m_Paused != PAUSE_PAUSED || SnappingClientVersion >= VERSION_DDNET_OLD));
-		pPlayerInfo->m_ClientId = TranslatedId;
-		pPlayerInfo->m_Team = (m_Team == TEAM_SPECTATORS) ? TEAM_SPECTATORS : 0;
+		pPlayerInfo->m_Local = (int)(m_ClientID == SnappingClient && (m_Paused != PAUSE_PAUSED || SnappingClientVersion >= VERSION_DDNET_OLD));
+		pPlayerInfo->m_ClientID = TranslatedId;
+
+		if(GameServer()->m_apPlayers[SnappingClient] && GameServer()->m_apPlayers[SnappingClient]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD)
+			pPlayerInfo->m_Team = (m_Team == TEAM_SPECTATORS) ? TEAM_SPECTATORS : 0;
+		else 
+			pPlayerInfo->m_Team = m_Team;
 		if(SnappingClientVersion < VERSION_DDNET_INDEPENDENT_SPECTATORS_TEAM)
 		{
 			// In older versions the SPECTATORS TEAM was also used if the own player is in PAUSE_PAUSED or if any player is in PAUSE_SPEC.
