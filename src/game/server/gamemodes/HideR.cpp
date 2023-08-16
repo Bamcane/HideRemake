@@ -47,7 +47,7 @@ void CGameControllerHideR::OnCharacterSpawn(CCharacter *pChr)
 	pChr->SetTeams(&m_Teams);
 	pChr->SetTeleports(&m_TeleOuts, &m_TeleCheckOuts);
 	m_Teams.OnCharacterSpawn(pChr->GetPlayer()->GetCID());
-	if((Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
+	if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		pChr->GetPlayer()->SetTeam(TEAM_RED, false);
 
 }
@@ -60,7 +60,7 @@ void CGameControllerHideR::OnPlayerConnect(CPlayer *pPlayer)
 {
 	IGameController::OnPlayerConnect(pPlayer);
 	int ClientID = pPlayer->GetCID();
-	if((Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
+	if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		pPlayer->SetTeam(TEAM_RED, false);
 	else
 		pPlayer->SetTeam(TEAM_BLUE, false);
@@ -159,7 +159,7 @@ void CGameControllerHideR::Tick()
 		if(m_HiderNum > 1)
 			m_LastHider = nullptr;
 
-		if((Server()->Tick() - m_RoundStartTick) == (15 * Server()->TickSpeed()))
+		if((Server()->Tick() - m_RoundStartTick) == (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		{
 			for(auto &Player : GameServer()->m_apPlayers)
 			{
@@ -171,7 +171,7 @@ void CGameControllerHideR::Tick()
 			}
 			GameServer()->SendChatTarget(-1, "The seekers are released!");
 			GameServer()->SendBroadcast("The seekers are released!", -1);
-		}else if ((Server()->Tick() - m_RoundStartTick) < (15 * Server()->TickSpeed()))
+		}else if ((Server()->Tick() - m_RoundStartTick) < (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		{
 			for(auto &Player : GameServer()->m_apPlayers)
 			{
@@ -185,7 +185,7 @@ void CGameControllerHideR::Tick()
 		}else 
 		{
 
-			if((!m_SeekerNum || !m_HiderNum) && (Server()->Tick() - m_RoundStartTick) > (15 * Server()->TickSpeed()))
+			if((!m_SeekerNum || !m_HiderNum) && (Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeStart * Server()->TickSpeed()))
 			{
 				EndRound();
 

@@ -208,6 +208,7 @@ MACRO_CONFIG_INT(SvPractice, sv_practice, 0, 0, 1, CFGFLAG_SERVER, "Enable pract
 
 MACRO_CONFIG_INT(SvNinjaRespawn, sv_ninja_respawn, 30, 0, 120, CFGFLAG_SERVER | CFGFLAG_GAME, "Ninja pickup be respawn time in seconds.")
 MACRO_CONFIG_INT(SvTimeLimit, sv_timelimit, 5, 0, 30, CFGFLAG_SERVER | CFGFLAG_GAME, "timelimit in mins.")
+MACRO_CONFIG_INT(SvTimeStart, sv_timestart, 15, 0, 60, CFGFLAG_SERVER | CFGFLAG_GAME, "start red team in seconds.")
 
 MACRO_CONFIG_INT(ClVideoPauseWithDemo, cl_video_pausewithdemo, 1, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Pause video rendering when demo playing pause")
 MACRO_CONFIG_INT(ClVideoShowhud, cl_video_showhud, 0, 0, 1, CFGFLAG_CLIENT | CFGFLAG_SAVE, "Show ingame HUD when rendering video")
