@@ -220,11 +220,15 @@ void CGameControllerHideR::Tick()
 					if(!Player)
 						continue;
 					if(Player->GetTeam() == TEAM_BLUE)
-						LastBlues.push_back(Player);
-				}
-				for(auto &Player : LastBlues)
-				{
-					GameServer()->Score()->SavePoint(Player->GetCID(), maximum(1, 6 - (int) LastBlues.size()));
+					{
+						int Points = maximum(1, 6 - (int) LastBlues.size());
+						Points += Player->m_CureNum;
+						GameServer()->Score()->SavePoint(Player->GetCID(), Points);
+					}else if(Player->GetTeam() == TEAM_RED)
+					{
+						int Points = Player->m_KillNum;
+						GameServer()->Score()->SavePoint(Player->GetCID(), Points);
+					}
 				}
 				
 				EndRound();
@@ -246,7 +250,8 @@ void CGameControllerHideR::Snap(int SnappingClient)
 	pGameInfoObj->m_GameFlags = m_GameFlags;
 	if(GameServer()->m_apPlayers[SnappingClient] && 
 		(GameServer()->m_apPlayers[SnappingClient]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD ||
-		GameServer()->m_apPlayers[SnappingClient]->m_LastPlayerFlags&PLAYERFLAG_SCOREBOARD))
+		GameServer()->m_apPlayers[SnappingClient]->m_LastPlayerFlags&PLAYERFLAG_SCOREBOARD ||
+		GameServer()->m_apPlayers[SnappingClient]->m_LastPrevPlayerFlags&PLAYERFLAG_SCOREBOARD))
 		pGameInfoObj->m_GameFlags = 0;
 
 	pGameInfoObj->m_GameStateFlags = 0;
