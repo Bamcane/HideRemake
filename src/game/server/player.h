@@ -74,6 +74,7 @@ public:
 	// states if the client is chatting, accessing a menu etc.
 	int m_PlayerFlags;
 	int m_LastPlayerFlags;
+	int m_LastPrevPlayerFlags;
 
 	// used for snapping to just update latency if the scoreboard is active
 	int m_aCurLatency[MAX_CLIENTS];

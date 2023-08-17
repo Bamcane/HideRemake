@@ -561,6 +561,7 @@ void CPlayer::OnDirectInput(CNetObj_PlayerInput *pNewInput)
 
 void CPlayer::OnPredictedEarlyInput(CNetObj_PlayerInput *pNewInput)
 {
+	m_LastPrevPlayerFlags = m_LastPlayerFlags;
 	m_LastPlayerFlags = m_PlayerFlags;
 	m_PlayerFlags = pNewInput->m_PlayerFlags;
 
