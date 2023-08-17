@@ -435,9 +435,6 @@ void CCharacter::FireWeapon()
 
 		Antibot()->OnHammerFire(m_pPlayer->GetCID());
 
-		if(m_Core.m_HammerHitDisabled)
-			break;
-
 		CEntity *apEnts[MAX_CLIENTS];
 		int Hits = 0;
 		int Num = GameServer()->m_World.FindEntities(ProjStartPos, GetProximityRadius() * 0.5f, apEnts,
@@ -446,6 +443,9 @@ void CCharacter::FireWeapon()
 		for(int i = 0; i < Num; ++i)
 		{
 			auto *pTarget = static_cast<CCharacter *>(apEnts[i]);
+
+			if(pTarget->GetPlayer()->GetTeam() == m_pPlayer->GetTeam() && m_Core.m_HammerHitDisabled)
+				continue;
 
 			//if ((pTarget == this) || Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
 			if((pTarget == this || (pTarget->IsAlive() && !CanCollide(pTarget->GetPlayer()->GetCID()))))
