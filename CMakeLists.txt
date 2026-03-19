@@ -2819,12 +2819,12 @@ if(SERVER)
     gamecontext.h
     gamecontroller.cpp
     gamecontroller.h
+    gamemodes/HideR.cpp
+    gamemodes/HideR.h
     gamemodes/ddnet.cpp
     gamemodes/ddnet.h
     gamemodes/mod.cpp
     gamemodes/mod.h
-    gamemodes/HideR.cpp
-    gamemodes/HideR.h
     gameworld.cpp
     gameworld.h
     mutes.cpp

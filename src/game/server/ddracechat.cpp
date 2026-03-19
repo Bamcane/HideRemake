@@ -257,7 +257,7 @@ static void ToggleSpecPause(IConsole::IResult *pResult, void *pUserData, int Pau
 	if(!pPlayer)
 		return;
 
-	pSelf->SendChatTarget(pResult->m_ClientID, "You couldn't spec in this mode");
+	pSelf->SendChatTarget(pResult->m_ClientId, "You couldn't spec in this mode");
 	return;
 
 	/*

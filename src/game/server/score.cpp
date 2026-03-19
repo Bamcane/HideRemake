@@ -190,9 +190,6 @@ void CScore::SaveScore(int ClientId, int TimeTicks, const char *pTimestamp, cons
 void CScore::SavePoint(int ClientID, int Num)
 {
 	CConsole *pCon = (CConsole *)GameServer()->Console();
-	if(pCon->m_Cheated)
-		return;
-
 	if(Num <= 0)
 		return;
 
@@ -201,14 +198,14 @@ void CScore::SavePoint(int ClientID, int Num)
 		dbg_msg("sql", "WARNING: previous save score result didn't complete, overwriting it now");
 	pCurPlayer->m_ScoreFinishResult = std::make_shared<CScorePlayerResult>();
 	auto Tmp = std::make_unique<CSqlPointData>(pCurPlayer->m_ScoreFinishResult);
-	Tmp->m_ClientID = ClientID;
+	Tmp->m_ClientId = ClientID;
 	Tmp->m_PointNum = Num;
 	str_copy(Tmp->m_aName, Server()->ClientName(ClientID), sizeof(Tmp->m_aName));
 
 	m_pPool->ExecuteWrite(CScoreWorker::SavePoint, std::move(Tmp), "save point");
 }
 
-void CScore::SaveTeamScore(int *pClientIDs, unsigned int Size, float Time, const char *pTimestamp)
+void CScore::SaveTeamScore(int Team, int *pClientIds, unsigned int Size, int TimeTicks, const char *pTimestamp)
 {
 	CConsole *pCon = (CConsole *)GameServer()->Console();
 	if(pCon->Cheated())

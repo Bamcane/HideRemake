@@ -11,6 +11,7 @@
 #include <game/mapitems.h>
 #include <game/server/gamecontext.h>
 #include <game/server/gamemodes/ddnet.h>
+#include <game/server/player.h>
 
 CLaser::CLaser(CGameWorld *pGameWorld, vec2 Pos, vec2 Direction, float StartEnergy, int Owner, int Type) :
 	CEntity(pGameWorld, CGameWorld::ENTTYPE_LASER)
@@ -93,7 +94,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 		if(pOwnerChar && pOwnerChar->GetPlayer()->GetTeam() == TEAM_BLUE && pHit->GetPlayer()->GetTeam() == TEAM_RED)
 			pHit->Freeze();
 		else
-			pHit->UnFreeze();
+			pHit->Unfreeze();
 	}
 	pHit->TakeDamage(vec2(0, 0), 0, m_Owner, m_Type);
 	return true;

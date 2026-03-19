@@ -519,7 +519,7 @@ void CCharacter::FireWeapon()
 				continue;
 
 			//if ((pTarget == this) || Collision()->IntersectLine(ProjStartPos, pTarget->m_Pos, NULL, NULL))
-			if((pTarget == this || (pTarget->IsAlive() && !CanCollide(pTarget->GetPlayer()->GetCID()))))
+			if((pTarget == this || (pTarget->IsAlive() && !CanCollide(pTarget->GetPlayer()->GetCid()))))
 				continue;
 
 			// set their velocity to fast upward (for now)
@@ -1231,7 +1231,7 @@ bool CCharacter::CanSnapCharacter(int SnappingClient)
 		else if(pSnapPlayer->SpectatorId() == SPEC_FREEVIEW && !CanCollide(SnappingClient) && pSnapPlayer->m_SpecTeam && !SameTeam(SnappingClient))
 			return false;
 	}
-	else if(m_pPlayer->GetTeam() == TEAM_BLUE && SnappingClient != m_pPlayer->GetCID() && (m_TileIndex == TILE_SOLO_ENABLE || m_TileFIndex == TILE_SOLO_ENABLE))
+	else if(m_pPlayer->GetTeam() == TEAM_BLUE && SnappingClient != m_pPlayer->GetCid() && (m_TileIndex == TILE_SOLO_ENABLE || m_TileFIndex == TILE_SOLO_ENABLE))
 		return false;
 
 	return true;

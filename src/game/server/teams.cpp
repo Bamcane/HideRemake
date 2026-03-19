@@ -953,7 +953,7 @@ void CGameTeams::SwapTeamCharacters(CPlayer *pPrimaryPlayer, CPlayer *pTargetPla
 	if(!pPrimaryPlayer || !pTargetPlayer)
 		return;
 
-	GameServer()->SendChatTarget(pPrimaryPlayer->GetCID(), "You couldn't swap in this mode");
+	GameServer()->SendChatTarget(pPrimaryPlayer->GetCid(), "You couldn't swap in this mode");
 
 	return;
 	/*

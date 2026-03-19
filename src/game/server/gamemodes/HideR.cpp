@@ -15,7 +15,7 @@
 #define TEST_TYPE_NAME "TestHideRemake"
 
 CGameControllerHideR::CGameControllerHideR(class CGameContext *pGameServer) :
-	IGameController(pGameServer), m_Teams(pGameServer)
+	IGameController(pGameServer)
 {
 	m_pGameType = g_Config.m_SvTestingCommands ? TEST_TYPE_NAME : GAME_TYPE_NAME;
 	m_LastPlayerNum = 0;
@@ -27,11 +27,7 @@ CGameControllerHideR::CGameControllerHideR(class CGameContext *pGameServer) :
 	m_SeekerNum = 0;
 	m_HiderNum = 0;
 
-	m_TeleCheckOuts.clear();
-	m_TeleOuts.clear();
 	m_StartSeekers.clear();
-
-	InitTeleporter();
 }
 
 CGameControllerHideR::~CGameControllerHideR() = default;
@@ -44,9 +40,6 @@ CScore *CGameControllerHideR::Score()
 void CGameControllerHideR::OnCharacterSpawn(CCharacter *pChr)
 {
 	IGameController::OnCharacterSpawn(pChr);
-	pChr->SetTeams(&m_Teams);
-	pChr->SetTeleports(&m_TeleOuts, &m_TeleCheckOuts);
-	m_Teams.OnCharacterSpawn(pChr->GetPlayer()->GetCID());
 	if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		pChr->GetPlayer()->SetTeam(TEAM_RED, false);
 
@@ -59,7 +52,7 @@ void CGameControllerHideR::HandleCharacterTiles(CCharacter *pChr, int MapIndex)
 void CGameControllerHideR::OnPlayerConnect(CPlayer *pPlayer)
 {
 	IGameController::OnPlayerConnect(pPlayer);
-	int ClientID = pPlayer->GetCID();
+	int ClientID = pPlayer->GetCid();
 	if((Server()->Tick() - m_RoundStartTick) > (Config()->m_SvTimeStart * Server()->TickSpeed()))
 		pPlayer->SetTeam(TEAM_RED, false);
 	else
@@ -69,7 +62,7 @@ void CGameControllerHideR::OnPlayerConnect(CPlayer *pPlayer)
 	{
 		char aBuf[512];
 		str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s", Server()->ClientName(ClientID), GetTeamName(pPlayer->GetTeam()));
-		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf, -1, CGameContext::CHAT_SIX);
+		GameServer()->SendChat(-1, TEAM_ALL, aBuf, -1, CGameContext::FLAG_SIX);
 
 		GameServer()->SendChatTarget(ClientID, "HiderR Mod. Version: " MOD_VERSION);
 	}
@@ -77,7 +70,7 @@ void CGameControllerHideR::OnPlayerConnect(CPlayer *pPlayer)
 
 void CGameControllerHideR::OnPlayerDisconnect(CPlayer *pPlayer, const char *pReason)
 {
-	int ClientID = pPlayer->GetCID();
+	int ClientID = pPlayer->GetCid();
 	bool WasModerator = pPlayer->m_Moderating && Server()->ClientIngame(ClientID);
 
 	for(unsigned i = 0; i < m_StartSeekers.size() ; i ++)
@@ -91,23 +84,23 @@ void CGameControllerHideR::OnPlayerDisconnect(CPlayer *pPlayer, const char *pRea
 	IGameController::OnPlayerDisconnect(pPlayer, pReason);
 
 	if(!GameServer()->PlayerModerating() && WasModerator)
-		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, "Server kick/spec votes are no longer actively moderated.");
+		GameServer()->SendChat(-1, TEAM_ALL, "Server kick/spec votes are no longer actively moderated.");
 
 	if(g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO)
-		m_Teams.SetForceCharacterTeam(ClientID, TEAM_FLOCK);
+		Teams().SetForceCharacterTeam(ClientID, TEAM_FLOCK);
 }
 
 void CGameControllerHideR::OnReset()
 {
 	IGameController::OnReset();
-	m_Teams.Reset();
+	Teams().Reset();
 }
 
 void CGameControllerHideR::Tick()
 {
 	IGameController::Tick();
-	m_Teams.ProcessSaveTeam();
-	m_Teams.Tick();
+	Teams().ProcessSaveTeam();
+	Teams().Tick();
 	
 	int PlayerNum = 0;
 
@@ -128,7 +121,7 @@ void CGameControllerHideR::Tick()
 			return;
 		}else if(PlayerNum < 2)
 		{
-			m_RoundStartTick ++;
+			m_RoundStartTick = Server()->Tick();
 		}
 
 		m_LastHider = nullptr;
@@ -180,7 +173,7 @@ void CGameControllerHideR::Tick()
 				if(Player->GetTeam() != TEAM_RED)
 					continue;
 				Player->Pause(CPlayer::PAUSE_PAUSED, true);
-				Player->SpectatePlayerName(Server()->ClientName(Player->GetCID()));
+				Player->SpectatePlayerName(Server()->ClientName(Player->GetCid()));
 			}
 		}else 
 		{
@@ -196,7 +189,7 @@ void CGameControllerHideR::Tick()
 						if(!Player)
 							continue;
 						if(Player->GetTeam() == TEAM_BLUE)
-							GameServer()->Score()->SavePoint(Player->GetCID(), Player->m_CureNum);
+							GameServer()->Score()->SavePoint(Player->GetCid(), Player->m_CureNum);
 					}
 
 					GameServer()->SendChatTarget(-1, "The hider win!");
@@ -206,7 +199,7 @@ void CGameControllerHideR::Tick()
 					{
 						if(!Player)
 							continue;
-						GameServer()->Score()->SavePoint(Player->GetCID(), Player->m_KillNum);
+						GameServer()->Score()->SavePoint(Player->GetCid(), Player->m_KillNum);
 					}
 
 					GameServer()->SendChatTarget(-1, "The seeker win!");
@@ -223,11 +216,11 @@ void CGameControllerHideR::Tick()
 					{
 						int Points = maximum(1, 6 - (int) LastBlues.size());
 						Points += Player->m_CureNum;
-						GameServer()->Score()->SavePoint(Player->GetCID(), Points);
+						GameServer()->Score()->SavePoint(Player->GetCid(), Points);
 					}else if(Player->GetTeam() == TEAM_RED)
 					{
 						int Points = Player->m_KillNum;
-						GameServer()->Score()->SavePoint(Player->GetCID(), Points);
+						GameServer()->Score()->SavePoint(Player->GetCid(), Points);
 					}
 				}
 				
@@ -263,6 +256,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_PAUSED;
 	pGameInfoObj->m_RoundStartTick = m_RoundStartTick;
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
+	pGameInfoObj->m_TimeLimit = Config()->m_SvTimeLimit;
 
 	pGameInfoObj->m_RoundNum = 0;
 	pGameInfoObj->m_RoundCurrent = m_RoundCount + 1;
@@ -273,15 +267,15 @@ void CGameControllerHideR::Snap(int SnappingClient)
 
 	if(pPlayer && (pPlayer->m_TimerType == CPlayer::TIMERTYPE_GAMETIMER || pPlayer->m_TimerType == CPlayer::TIMERTYPE_GAMETIMER_AND_BROADCAST) && pPlayer->GetClientVersion() >= VERSION_DDNET_GAMETICK)
 	{
-		if((pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->m_SpectatorID != SPEC_FREEVIEW && (pPlayer2 = GameServer()->m_apPlayers[pPlayer->m_SpectatorID]))
+		if((pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->SpectatorId() != SPEC_FREEVIEW && (pPlayer2 = GameServer()->m_apPlayers[pPlayer->SpectatorId()]))
 		{
-			if((pChr = pPlayer2->GetCharacter()) && pChr->m_DDRaceState == DDRACE_STARTED)
+			if((pChr = pPlayer2->GetCharacter()) && pChr->m_DDRaceState == ERaceState::STARTED)
 			{
 				pGameInfoObj->m_WarmupTimer = -pChr->m_StartTime;
 				pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_RACETIME;
 			}
 		}
-		else if((pChr = pPlayer->GetCharacter()) && pChr->m_DDRaceState == DDRACE_STARTED)
+		else if((pChr = pPlayer->GetCharacter()) && pChr->m_DDRaceState == ERaceState::STARTED)
 		{
 			pGameInfoObj->m_WarmupTimer = -pChr->m_StartTime;
 			pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_RACETIME;
@@ -297,9 +291,9 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		pGameData->m_FlagCarrierBlue = FLAG_ATSTAND;
 
 		if(m_BestSeeker)
-			pGameData->m_FlagCarrierRed = m_BestSeeker->GetCID();
+			pGameData->m_FlagCarrierRed = m_BestSeeker->GetCid();
 		if(m_LastHider)
-			pGameData->m_FlagCarrierBlue = m_LastHider->GetCID(); 
+			pGameData->m_FlagCarrierBlue = m_LastHider->GetCid(); 
 	}
 
 	CNetObj_GameInfoEx *pGameInfoEx = Server()->SnapNewItem<CNetObj_GameInfoEx>(0);
@@ -350,7 +344,10 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		if(!pRaceData)
 			return;
 
-		pRaceData->m_BestTime = round_to_int(m_CurrentRecord * 1000);
+		CFinishTime MapTime = SnapMapBestTime(SnappingClient);
+		int BestTime = MapTime.m_Seconds > 0 ? MapTime.m_Seconds * 1000 + MapTime.m_Milliseconds : -1;
+
+		pRaceData->m_BestTime = BestTime;
 		pRaceData->m_Precision = 0;
 		pRaceData->m_RaceFlags = protocol7::RACEFLAG_HIDE_KILLMSG | protocol7::RACEFLAG_KEEP_WANTED_WEAPON;
 	}
@@ -359,8 +356,8 @@ void CGameControllerHideR::Snap(int SnappingClient)
 	{
 		int Team = pPlayer && pPlayer->GetCharacter() ? pPlayer->GetCharacter()->Team() : 0;
 
-		if(pPlayer && (pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->m_SpectatorID != SPEC_FREEVIEW && GameServer()->m_apPlayers[pPlayer->m_SpectatorID] && GameServer()->m_apPlayers[pPlayer->m_SpectatorID]->GetCharacter())
-			Team = GameServer()->m_apPlayers[pPlayer->m_SpectatorID]->GetCharacter()->Team();
+		if(pPlayer && (pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->SpectatorId() != SPEC_FREEVIEW && GameServer()->m_apPlayers[pPlayer->SpectatorId()] && GameServer()->m_apPlayers[pPlayer->SpectatorId()]->GetCharacter())
+			Team = GameServer()->m_apPlayers[pPlayer->SpectatorId()]->GetCharacter()->Team();
 
 		if(Team == TEAM_SUPER)
 			return;
@@ -373,7 +370,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		if(!pSwitchState)
 			return;
 
-		pSwitchState->m_HighestSwitchNumber = clamp((int)GameServer()->Switchers().size() - 1, 0, 255);
+		pSwitchState->m_HighestSwitchNumber = std::clamp((int)GameServer()->Switchers().size() - 1, 0, 255);
 		mem_zero(pSwitchState->m_aStatus, sizeof(pSwitchState->m_aStatus));
 
 		std::vector<std::pair<int, int>> vEndTicks; // <EndTick, SwitchNumber>
@@ -414,7 +411,6 @@ void CGameControllerHideR::StartRound()
 	m_SuddenDeath = 0;
 	m_GameOverTick = -1;
 	GameServer()->m_World.m_Paused = false;
-	m_ForceBalanced = false;
 	Server()->DemoRecorder_HandleAutoStart();
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "start round type='%s' teamplay='%d'", m_pGameType, m_GameFlags & GAMEFLAG_TEAMS);
@@ -454,7 +450,9 @@ void CGameControllerHideR::StartRound()
 
 void CGameControllerHideR::DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg)
 {
-	Team = ClampTeam(Team);
+	if(!IsValidTeam(Team))
+		return;
+
 	if(Team == pPlayer->GetTeam())
 		return;
 
@@ -464,50 +462,16 @@ void CGameControllerHideR::DoTeamChange(class CPlayer *pPlayer, int Team, bool D
 	{
 		if(g_Config.m_SvTeam != SV_TEAM_FORCED_SOLO && pCharacter)
 		{
+			Teams().OnCharacterDeath(pPlayer->GetCid(), WEAPON_GAME);
 			// Joining spectators should not kill a locked team, but should still
 			// check if the team finished by you leaving it.
 			int DDRTeam = pCharacter->Team();
-			m_Teams.SetForceCharacterTeam(pPlayer->GetCID(), TEAM_FLOCK);
-			m_Teams.CheckTeamFinished(DDRTeam);
+			Teams().SetForceCharacterTeam(pPlayer->GetCid(), TEAM_FLOCK);
+			Teams().CheckTeamFinished(DDRTeam);
 		}
 	}
 
 	IGameController::DoTeamChange(pPlayer, Team, DoChatMsg);
-}
-
-CClientMask CGameControllerHideR::GetMaskForPlayerWorldEvent(int Asker, int ExceptID)
-{
-	if(Asker == -1)
-		return CClientMask().set().reset(ExceptID);
-
-	return m_Teams.TeamMask(GetPlayerTeam(Asker), ExceptID, Asker);
-}
-
-void CGameControllerHideR::InitTeleporter()
-{
-	if(!GameServer()->Collision()->Layers()->TeleLayer())
-		return;
-	int Width = GameServer()->Collision()->Layers()->TeleLayer()->m_Width;
-	int Height = GameServer()->Collision()->Layers()->TeleLayer()->m_Height;
-
-	for(int i = 0; i < Width * Height; i++)
-	{
-		int Number = GameServer()->Collision()->TeleLayer()[i].m_Number;
-		int Type = GameServer()->Collision()->TeleLayer()[i].m_Type;
-		if(Number > 0)
-		{
-			if(Type == TILE_TELEOUT)
-			{
-				m_TeleOuts[Number - 1].push_back(
-					vec2(i % Width * 32 + 16, i / Width * 32 + 16));
-			}
-			else if(Type == TILE_TELECHECKOUT)
-			{
-				m_TeleCheckOuts[Number - 1].push_back(
-					vec2(i % Width * 32 + 16, i / Width * 32 + 16));
-			}
-		}
-	}
 }
 
 int CGameControllerHideR::GetPlayerTeam(int ClientID) const

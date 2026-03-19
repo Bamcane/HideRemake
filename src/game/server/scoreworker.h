@@ -157,7 +157,7 @@ struct CSqlPointData : ISqlData
 
 	char m_aName[MAX_MAP_LENGTH];
 	
-	int m_ClientID;
+	int m_ClientId;
 	int m_PointNum;
 };
 

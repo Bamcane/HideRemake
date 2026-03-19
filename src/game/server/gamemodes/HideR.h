@@ -31,18 +31,9 @@ public:
 
 	void DoTeamChange(class CPlayer *pPlayer, int Team, bool DoChatMsg = true) override;
 
-	CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1) override;
-
-	void InitTeleporter();
-
 	int GetPlayerTeam(int ClientID) const;
 
-	CGameTeams m_Teams;
-
 	int m_LastPlayerNum;
-
-	std::map<int, std::vector<vec2>> m_TeleOuts;
-	std::map<int, std::vector<vec2>> m_TeleCheckOuts;
 
 	std::vector<CPlayer *> m_StartSeekers;
 

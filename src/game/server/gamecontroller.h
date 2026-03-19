@@ -216,7 +216,7 @@ public:
 
 	int RoundStartTick() const { return m_RoundStartTick; }
 
-	virtual CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
+	CClientMask GetMaskForPlayerWorldEvent(int Asker, int ExceptID = -1);
 
 	bool IsTeamPlay() const { return m_GameFlags & GAMEFLAG_TEAMS; }
 	// DDRace
