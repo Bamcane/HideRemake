@@ -1552,12 +1552,6 @@ set(EXPECTED_DATA
   mapres/winter_mountains3.png
   maps/Nature.map
   maps/R-ace.map
-  maps7/Gold\ Mine.map
-  maps7/LearnToPlay.map
-  maps7/Sunny\ Side\ Up.map
-  maps7/Tsunami.map
-  maps7/Tutorial.map
-  maps7/readme.txt
   menuimages/demos.png
   menuimages/editor.png
   menuimages/local_server.png

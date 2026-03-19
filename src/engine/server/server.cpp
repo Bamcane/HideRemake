@@ -2965,7 +2965,7 @@ int CServer::LoadMap(const char *pMapName)
 	// load sixup version of the map
 	if(Config()->m_SvSixup)
 	{
-		str_format(aBuf, sizeof(aBuf), "maps7/%s.map", pMapName);
+		str_format(aBuf, sizeof(aBuf), "maps/%s.map", pMapName);
 		void *pData;
 		if(!Storage()->ReadFile(aBuf, IStorage::TYPE_ALL, &pData, &m_aCurrentMapSize[MAP_TYPE_SIXUP]))
 		{
