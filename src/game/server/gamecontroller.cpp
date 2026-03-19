@@ -419,7 +419,7 @@ void IGameController::OnPlayerConnect(CPlayer *pPlayer)
 			Msg.m_MatchCurrent = 1;
 			Msg.m_MatchNum = 0;
 			Msg.m_ScoreLimit = 0;
-			Msg.m_TimeLimit = 0;
+			Msg.m_TimeLimit = g_Config.m_SvTimeLimit;
 			Server()->SendPackMsg(&Msg, MSGFLAG_VITAL | MSGFLAG_NORECORD, ClientId);
 		}
 

@@ -6,6 +6,7 @@
 #include <engine/shared/config.h>
 #include <game/mapitems.h>
 #include <game/server/entities/character.h>
+#include <engine/shared/protocolglue.h>
 #include <game/server/gamecontext.h>
 #include <game/server/player.h>
 #include <game/server/score.h>
@@ -240,19 +241,18 @@ void CGameControllerHideR::Snap(int SnappingClient)
 	if(!pGameInfoObj)
 		return;
 
-	pGameInfoObj->m_GameFlags = m_GameFlags;
-	if(GameServer()->m_apPlayers[SnappingClient] && 
+	pGameInfoObj->m_GameFlags = GameFlags_ClampToSix(m_GameFlags);
+	if(SnappingClient >= 0 && GameServer()->m_apPlayers[SnappingClient] && 
 		(GameServer()->m_apPlayers[SnappingClient]->m_PlayerFlags&PLAYERFLAG_SCOREBOARD ||
 		GameServer()->m_apPlayers[SnappingClient]->m_LastPlayerFlags&PLAYERFLAG_SCOREBOARD ||
 		GameServer()->m_apPlayers[SnappingClient]->m_LastPrevPlayerFlags&PLAYERFLAG_SCOREBOARD))
 		pGameInfoObj->m_GameFlags = 0;
-
 	pGameInfoObj->m_GameStateFlags = 0;
 	if(m_GameOverTick != -1)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_GAMEOVER;
 	if(m_SuddenDeath)
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_SUDDENDEATH;
-	if(GameServer()->m_World.m_Paused)
+	if(IsGamePaused())
 		pGameInfoObj->m_GameStateFlags |= GAMESTATEFLAG_PAUSED;
 	pGameInfoObj->m_RoundStartTick = m_RoundStartTick;
 	pGameInfoObj->m_WarmupTimer = m_Warmup;
@@ -262,7 +262,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 	pGameInfoObj->m_RoundCurrent = m_RoundCount + 1;
 
 	CCharacter *pChr;
-	CPlayer *pPlayer = SnappingClient != SERVER_DEMO_CLIENT ? GameServer()->m_apPlayers[SnappingClient] : 0;
+	CPlayer *pPlayer = SnappingClient != SERVER_DEMO_CLIENT ? GameServer()->m_apPlayers[SnappingClient] : nullptr;
 	CPlayer *pPlayer2;
 
 	if(pPlayer && (pPlayer->m_TimerType == CPlayer::TIMERTYPE_GAMETIMER || pPlayer->m_TimerType == CPlayer::TIMERTYPE_GAMETIMER_AND_BROADCAST) && pPlayer->GetClientVersion() >= VERSION_DDNET_GAMETICK)
@@ -282,7 +282,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		}
 	}
 
-	if(pGameInfoObj->m_GameFlags & GAMEFLAG_FLAGS)
+	if(!Server()->IsSixup(SnappingClient) && pGameInfoObj->m_GameFlags & GAMEFLAG_FLAGS)
 	{
 		CNetObj_GameData *pGameData = Server()->SnapNewItem<CNetObj_GameData>(0);
 		pGameData->m_TeamscoreBlue = m_HiderNum;
@@ -301,10 +301,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		return;
 
 	pGameInfoEx->m_Flags =
-		GAMEINFOFLAG_TIMESCORE |
-		GAMEINFOFLAG_GAMETYPE_RACE |
-		GAMEINFOFLAG_GAMETYPE_DDRACE |
-		GAMEINFOFLAG_GAMETYPE_DDNET |
+		GAMEINFOFLAG_GAMETYPE_VANILLA |
 		GAMEINFOFLAG_UNLIMITED_AMMO |
 		GAMEINFOFLAG_RACE_RECORD_MESSAGE |
 		GAMEINFOFLAG_ALLOW_EYE_WHEEL |
@@ -316,9 +313,8 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		GAMEINFOFLAG_PREDICT_DDRACE_TILES |
 		GAMEINFOFLAG_ENTITIES_DDNET |
 		GAMEINFOFLAG_ENTITIES_DDRACE |
-		GAMEINFOFLAG_ENTITIES_RACE |
-		GAMEINFOFLAG_RACE;
-	pGameInfoEx->m_Flags2 = GAMEINFOFLAG2_HUD_DDRACE;
+		GAMEINFOFLAG_ENTITIES_RACE;
+	pGameInfoEx->m_Flags2 = GAMEINFOFLAG2_HUD_DDRACE | GAMEINFOFLAG2_PREDICT_EVENTS;
 	if(g_Config.m_SvNoWeakHook)
 		pGameInfoEx->m_Flags2 |= GAMEINFOFLAG2_NO_WEAK_HOOK;
 	pGameInfoEx->m_Version = GAMEINFO_CURVERSION;
@@ -335,7 +331,7 @@ void CGameControllerHideR::Snap(int SnappingClient)
 			pGameData->m_GameStateFlags |= protocol7::GAMESTATEFLAG_GAMEOVER;
 		if(m_SuddenDeath)
 			pGameData->m_GameStateFlags |= protocol7::GAMESTATEFLAG_SUDDENDEATH;
-		if(GameServer()->m_World.m_Paused)
+		if(IsGamePaused())
 			pGameData->m_GameStateFlags |= protocol7::GAMESTATEFLAG_PAUSED;
 
 		pGameData->m_GameStateEndTick = 0;
@@ -348,57 +344,38 @@ void CGameControllerHideR::Snap(int SnappingClient)
 		int BestTime = MapTime.m_Seconds > 0 ? MapTime.m_Seconds * 1000 + MapTime.m_Milliseconds : -1;
 
 		pRaceData->m_BestTime = BestTime;
-		pRaceData->m_Precision = 0;
-		pRaceData->m_RaceFlags = protocol7::RACEFLAG_HIDE_KILLMSG | protocol7::RACEFLAG_KEEP_WANTED_WEAPON;
+		pRaceData->m_Precision = 2;
+		pRaceData->m_RaceFlags = protocol7::RACEFLAG_KEEP_WANTED_WEAPON;
+
+		protocol7::CNetObj_GameDataTeam *pGameTeamData = Server()->SnapNewItem<protocol7::CNetObj_GameDataTeam>(0);
+		if(!pGameTeamData)
+			return;
+		pGameTeamData->m_TeamscoreBlue = m_HiderNum;
+		pGameTeamData->m_TeamscoreRed = m_SeekerNum;
+		protocol7::CNetObj_GameDataFlag *pGameDataFlag = Server()->SnapNewItem<protocol7::CNetObj_GameDataFlag>(0);
+		if(!pGameDataFlag)
+			return;
+		pGameDataFlag->m_FlagCarrierRed = FLAG_ATSTAND;
+		pGameDataFlag->m_FlagCarrierBlue = FLAG_ATSTAND;
+
+		if(m_BestSeeker)
+			pGameDataFlag->m_FlagCarrierRed = m_BestSeeker->GetCid();
+		if(m_LastHider)
+			pGameDataFlag->m_FlagCarrierBlue = m_LastHider->GetCid(); 
 	}
 
-	if(!GameServer()->Switchers().empty())
+	GameServer()->SnapSwitchers(SnappingClient);
+
+	if(!Server()->IsSixup(SnappingClient) && GameServer()->GetClientVersion(SnappingClient) >= VERSION_DDNET_MAP_BESTTIME)
 	{
-		int Team = pPlayer && pPlayer->GetCharacter() ? pPlayer->GetCharacter()->Team() : 0;
-
-		if(pPlayer && (pPlayer->GetTeam() == TEAM_SPECTATORS || pPlayer->IsPaused()) && pPlayer->SpectatorId() != SPEC_FREEVIEW && GameServer()->m_apPlayers[pPlayer->SpectatorId()] && GameServer()->m_apPlayers[pPlayer->SpectatorId()]->GetCharacter())
-			Team = GameServer()->m_apPlayers[pPlayer->SpectatorId()]->GetCharacter()->Team();
-
-		if(Team == TEAM_SUPER)
-			return;
-
-		int SentTeam = Team;
-		if(g_Config.m_SvTeam == SV_TEAM_FORCED_SOLO)
-			SentTeam = 0;
-
-		CNetObj_SwitchState *pSwitchState = Server()->SnapNewItem<CNetObj_SwitchState>(SentTeam);
-		if(!pSwitchState)
-			return;
-
-		pSwitchState->m_HighestSwitchNumber = std::clamp((int)GameServer()->Switchers().size() - 1, 0, 255);
-		mem_zero(pSwitchState->m_aStatus, sizeof(pSwitchState->m_aStatus));
-
-		std::vector<std::pair<int, int>> vEndTicks; // <EndTick, SwitchNumber>
-
-		for(int i = 0; i <= pSwitchState->m_HighestSwitchNumber; i++)
+		CFinishTime MapTime = SnapMapBestTime(SnappingClient);
+		if(MapTime.m_Seconds != FinishTime::UNSET)
 		{
-			int Status = (int)GameServer()->Switchers()[i].m_aStatus[Team];
-			pSwitchState->m_aStatus[i / 32] |= (Status << (i % 32));
-
-			int EndTick = GameServer()->Switchers()[i].m_aEndTick[Team];
-			if(EndTick > 0 && EndTick < Server()->Tick() + 3 * Server()->TickSpeed() && GameServer()->Switchers()[i].m_aLastUpdateTick[Team] < Server()->Tick())
-			{
-				// only keep track of EndTicks that have less than three second left and are not currently being updated by a player being present on a switch tile, to limit how often these are sent
-				vEndTicks.emplace_back(GameServer()->Switchers()[i].m_aEndTick[Team], i);
-			}
-		}
-
-		// send the endtick of switchers that are about to toggle back (up to four, prioritizing those with the earliest endticks)
-		mem_zero(pSwitchState->m_aSwitchNumbers, sizeof(pSwitchState->m_aSwitchNumbers));
-		mem_zero(pSwitchState->m_aEndTicks, sizeof(pSwitchState->m_aEndTicks));
-
-		std::sort(vEndTicks.begin(), vEndTicks.end());
-		const int NumTimedSwitchers = minimum((int)vEndTicks.size(), (int)std::size(pSwitchState->m_aEndTicks));
-
-		for(int i = 0; i < NumTimedSwitchers; i++)
-		{
-			pSwitchState->m_aSwitchNumbers[i] = vEndTicks[i].second;
-			pSwitchState->m_aEndTicks[i] = vEndTicks[i].first;
+			CNetObj_MapBestTime *pMapTimeMsg = Server()->SnapNewItem<CNetObj_MapBestTime>(0);
+			if(!pMapTimeMsg)
+				return;
+			pMapTimeMsg->m_MapBestTimeSeconds = MapTime.m_Seconds;
+			pMapTimeMsg->m_MapBestTimeMillis = MapTime.m_Milliseconds;
 		}
 	}
 }
