@@ -42,6 +42,8 @@ PickupFlags = [
 	"XFLIP", "YFLIP", "ROTATE", "NO_PREDICT",
 ]
 
+GamePredictionFlags = Flags("GAMEPREDICTIONFLAG", ["EVENT", "INPUT"])
+
 LaserTypes = ["RIFLE", "SHOTGUN", "DOOR", "FREEZE", "DRAGGER", "GUN", "PLASMA"]
 DraggerTypes = ["WEAK", "WEAK_NW", "NORMAL", "NORMAL_NW", "STRONG", "STRONG_NW"]
 GunTypes = ["UNFREEZE", "EXPLOSIVE", "FREEZE", "EXPFREEZE"]
@@ -106,6 +108,7 @@ Flags = [
 	Flags("PROJECTILEFLAG", ProjectileFlags),
 	Flags("LASERFLAG", LaserFlags),
 	Flags("PICKUPFLAG", PickupFlags),
+    GamePredictionFlags,
 ]
 
 Objects = [
@@ -399,6 +402,10 @@ Objects = [
 
 	NetEventEx("MapSoundWorld:Common", "map-sound-world@netevent.ddnet.org", [
 		NetIntAny("m_SoundId"),
+	]),
+    
+	NetObjectEx("GameDataPrediction", "game-data-prediction@netobj.teeworlds.wiki", [
+        NetIntAny("m_PredictionFlags"),
 	]),
 ]
 

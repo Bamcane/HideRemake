@@ -362,6 +362,17 @@ void CGameControllerHideR::Snap(int SnappingClient)
 			pGameDataFlag->m_FlagCarrierRed = m_BestSeeker->GetCid();
 		if(m_LastHider)
 			pGameDataFlag->m_FlagCarrierBlue = m_LastHider->GetCid(); 
+		CNetObj_GameDataPrediction *pPredictionData = Server()->SnapNewItem<CNetObj_GameDataPrediction>(0);
+		if(!pPredictionData)
+			return;
+		pPredictionData->m_PredictionFlags = GAMEPREDICTIONFLAG_EVENT | GAMEPREDICTIONFLAG_INPUT;
+		if(pPlayer && pPlayer->GetCharacter())
+		{
+			if(pPlayer->GetCharacter()->m_FreezeTime > 0)
+			{
+				pPredictionData->m_PredictionFlags &= ~GAMEPREDICTIONFLAG_INPUT;
+			}
+		}
 	}
 
 	GameServer()->SnapSwitchers(SnappingClient);
